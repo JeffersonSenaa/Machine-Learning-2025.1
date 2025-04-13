@@ -3,7 +3,7 @@ Mini Trabalho 2 – Aquisição de Dados
 
 1. Fontes dos dados:  
 - Base 1: Brazilian Soccer Database (Kaggle)  
-  Link: https://www.kaggle.com/datasets/adaoduque/brazilian-soccer-database  
+  Link: https://www.kaggle.com/datasets/ricardomattos05/jogos-do-campeonato-brasileiro 
   Licença: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)  
 
 - Base 2: Brasileirão Dataset (GitHub - adaoduque/Brasileirao_Dataset)  
