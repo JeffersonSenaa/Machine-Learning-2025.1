@@ -1,7 +1,12 @@
 import sqlite3
 import pandas as pd
 import os
-from pathlib import Path
+
+def dump_database(conn, output_file='dump_brasileirao.sql'):
+    with open(output_file, 'w') as f:
+        for line in conn.iterdump():
+            f.write(f'{line}\n')
+    print(f"Dump do banco de dados salvo em: {output_file}")
 
 def main():
     # Verificar se o arquivo CSV existe
@@ -57,6 +62,9 @@ def main():
         print("\nPrimeiros 5 registros importados:")
         for row in cursor.fetchall():
             print(row)
+            
+        # Realizar o dump do banco de dados
+        dump_database(conn)
 
     except sqlite3.Error as e:
         print(f"Erro no SQLite: {e}")
@@ -72,5 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
