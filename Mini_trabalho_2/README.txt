@@ -6,12 +6,12 @@ Mini Trabalho 2 – Aquisição de Dados
   Link: https://www.kaggle.com/datasets/ricardomattos05/jogos-do-campeonato-brasileiro 
   Licença: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)  
 
-- Base 2: Brasileirão Dataset (GitHub - adaoduque/Brasileirao_Dataset)  
-  Link: https://github.com/adaoduque/Brasileirao_Dataset/tree/master  
+- Base 2: Campeonato Brasileiro de futebol (GitHub - adaoduque/Brasileirao_Dataset)  
+  Link: https://www.kaggle.com/datasets/adaoduque/campeonato-brasileiro-de-futebol  
   Licença: Repositório público com código aberto para fins educacionais e analíticos.  
 
-- Base 3: Brazilian Soccer Data – Brasileirão Matches (GitHub - ricardo-mattoss/Brazilian-Soccer-Data)
-  Link: https://github.com/ricardo-mattoss/Brazilian-Soccer-Data/blob/master/Data/Brasileirao_Matches.csv
+- Base 3: Brazilian Soccer - Brasileirão - Brasileirao 
+  Link: https://www.kaggle.com/datasets/gustavomartino/brasileirao?resource=download
   Licença: Licença aberta para uso não comercial e educacional, disponibilizada no repositório GitHub.
 
 2. Justificativa da escolha:  
@@ -24,9 +24,9 @@ As três bases apresentam dados sobre o Campeonato Brasileiro, com diferentes fo
 
 - A Base 1 contém colunas como datetime, home_team, away_team, home_goal, away_goal, season, round, entre outras.
 
-- A Base 2 detalha informações como posse de bola, estádio, horários, gols, além de cartões e outras estatísticas de desempenho por time.
+- A Base 2 detalha informações como: rodata, data, hora, mandante, visitante, formação do mandante, formação do visitante, técnico do mandante, técnico do visitante, vencedor, arena, placar do mandante, placar do visitante, estado do mandante e estado do visitante.
 
-- A Base 3 apresenta dados similares às demais, com foco em partidas do Brasileirão, incluindo colunas como date, home_team, away_team, home_score, away_score, round e stadium.
+- A Base 3 apresenta dados similares às demais, com foco em partidas do Brasileirão, incluindo colunas como: round, day, month, year, season, home team, goals HT, goals VT e visiting team.
 
 Essas informações são fundamentais para a construção de variáveis independentes e dependentes, permitindo o desenvolvimento de modelos de aprendizado supervisionado.
 
@@ -47,7 +47,4 @@ As bases utilizadas estão publicamente disponíveis no Kaggle e possuem licenç
 7. Estrutura dos arquivos entregues:
 - README.txt → este arquivo.  
 - MiniTrabalho2.pdf → Documento com análise das bases, justificativas e detalhes do processo de coleta.  
-- [NOME DOS ARQUIVOS .CSV OU .XLS DAS BASES COLETADAS]  
-- [INSIRA AQUI O NOME DE OUTROS ARQUIVOS, COMO SCRIPTS OU PASTAS DE DADOS SE HOUVER]  
-
-
+- Nome do dataset ->  Dataset e ferramenta ou método utilizado para extrair e armazenar os dados de forma segura. 
