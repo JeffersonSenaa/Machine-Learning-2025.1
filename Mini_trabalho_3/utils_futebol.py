@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def load_data(filepath="C:/Users/Pichau/Documents/comecouOstrabalhos/MiniTrabalho-3-Grupo-5/conjunto_de_dados_limpos/Campeonato_Brasileiro_de_futebol_limpo.csv"):
+def load_data(filepath="/Users/flavioovatsug/Desktop/unb/aprendizado_maquina/Machine-Learning-2025.1/Mini_trabalho_3/conjunto_de_dados_limpos/Campeonato_Brasileiro_de_futebol_limpo.csv"):
     """
     Carrega e prepara os dados do Campeonato Brasileiro
     """
