@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 # Arquivos CSV de entrada e saída
 arquivos = {
@@ -96,6 +97,27 @@ def padronizar_times(df):
             df[col] = df[col].map(mapa_times).fillna(df[col])
     return df
 
+""" Função para codificar variáveis categóricas com One-Hot Encoding """
+def codificar_categoricas(df):
+    colunas_categoricas = df.select_dtypes(include=['object']).columns.tolist()
+    
+    colunas_para_codificar = [col for col in colunas_categoricas if df[col].nunique() <= 20]
+    
+    df = pd.get_dummies(df, columns=colunas_para_codificar, drop_first=True)
+    return df
+
+""" Função para padronizar colunas numéricas """
+def padronizar_numericas(df, colunas):
+    scaler = StandardScaler()
+    for col in colunas:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    colunas_validas = [col for col in colunas if col in df.columns and df[col].notna().all()]
+    
+    if colunas_validas:
+        df[colunas_validas] = scaler.fit_transform(df[colunas_validas])
+    return df
+
 # Colunas específicas
 colunas_ausentes = ['formacao_mandante', 'formacao_visitante', 'tecnico_mandante', 'tecnico_visitante']
 colunas_numericas = [
@@ -112,14 +134,17 @@ for arquivo_entrada, arquivo_saida in arquivos.items():
     # Verifica se há colunas separadas de year, month e day
     if all(col in df.columns for col in ['year', 'month', 'day']):
         df['data_partida'] = pd.to_datetime(dict(year=df['year'], month=df['month'], day=df['day']), errors='coerce')
-        df.drop(columns=['year', 'month', 'day'], inplace=True)  # Remove as colunas
+        df.drop(columns=['year', 'month', 'day'], inplace=True)
         colunas_data.append('data_partida')
 
-    # Chama a função para separar a coluna datetime
+    # Pipeline de limpeza e transformação
     df = tratar_datas(df, colunas_data)
-    df = tratar_ausentes(df)  # Substitui "-" e NaN por "ausente" em todas as colunas
+    df = tratar_ausentes(df)
     df = converter_numericos(df, colunas_numericas)
     df = padronizar_times(df)
+    df = codificar_categoricas(df) 
+    df = padronizar_numericas(df, colunas_numericas) 
+    
     df.to_csv(arquivo_saida, index=False)
     print(f'{arquivo_entrada} processado e salvo como {arquivo_saida}')
 
