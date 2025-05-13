@@ -97,14 +97,14 @@ def padronizar_times(df):
             df[col] = df[col].map(mapa_times).fillna(df[col])
     return df
 
-""" Função para codificar variáveis categóricas com One-Hot Encoding """
-def codificar_categoricas(df):
-    colunas_categoricas = df.select_dtypes(include=['object']).columns.tolist()
-    
-    colunas_para_codificar = [col for col in colunas_categoricas if df[col].nunique() <= 20]
-    
-    df = pd.get_dummies(df, columns=colunas_para_codificar, drop_first=True)
-    return df
+#""" Função para codificar variáveis categóricas com One-Hot Encoding """
+#def codificar_categoricas(df):
+#    colunas_categoricas = df.select_dtypes(include=['object']).columns.tolist()
+#   
+#    colunas_para_codificar = [col for col in colunas_categoricas if df[col].nunique() <= 20]
+#    
+#    df = pd.get_dummies(df, columns=colunas_para_codificar, drop_first=True)
+#    return df
 
 """ Função para padronizar colunas numéricas """
 def padronizar_numericas(df, colunas):

@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-file_path = 'C://Users//Usuario//Desktop//Mini_trabalho_4//conjunto_de_dados_limpos//Campeonato_Brasileiro_de_futebol_limpo.csv'
+file_path = 'conjunto_de_dados_limpos/Campeonato_Brasileiro_de_futebol_limpo.csv'
 
 if not os.path.exists(file_path):
     raise FileNotFoundError(f'O arquivo {file_path} não foi encontrado. Verifique o caminho e tente novamente.')
