@@ -142,7 +142,7 @@ for arquivo_entrada, arquivo_saida in arquivos.items():
     df = tratar_ausentes(df)
     df = converter_numericos(df, colunas_numericas)
     df = padronizar_times(df)
-    df = codificar_categoricas(df) 
+    #df = codificar_categoricas(df) 
     df = padronizar_numericas(df, colunas_numericas) 
     
     df.to_csv(arquivo_saida, index=False)
