@@ -9,7 +9,7 @@ import seaborn as sns
 import os
 import time
 
-file_path = '/home/pedro/Machine-Learning-2025.1/Mini_trabalho_6/conjunto_de_dados_limpos/Campeonato_Brasileiro_de_futebol_limpo.csv'
+file_path = 'conjunto_de_dados_limpos/Campeonato_Brasileiro_de_futebol_limpo.csv'
 
 if not os.path.exists(file_path):
     raise FileNotFoundError(f'O arquivo {file_path} não foi encontrado. Verifique o caminho e tente novamente.')
@@ -33,6 +33,96 @@ def define_resultado(row):
 
 df['resultado'] = df.apply(define_resultado, axis=1)
 
+# Ordenar por data para cálculos temporais
+df = df.sort_values(by='data')
+
+# Função para calcular percentual de vitórias, empates e derrotas nos últimos N jogos
+def calcular_historico_recente(df, n_jogos=5):
+    # Cria cópia dos dados
+    dados = df.copy().sort_values('id')
+    
+    # Inicializa as colunas de histórico
+    dados['mandante_pct_vitorias'] = 0.0
+    dados['mandante_pct_empates'] = 0.0
+    dados['mandante_pct_derrotas'] = 0.0
+    dados['visitante_pct_vitorias'] = 0.0
+    dados['visitante_pct_empates'] = 0.0
+    dados['visitante_pct_derrotas'] = 0.0
+    
+    # Lista de todos os times únicos
+    times = list(set(dados['mandante'].unique()) | set(dados['visitante'].unique()))
+    
+    for time in times:
+        # Pega todos os jogos de cada time (como mandante ou visitante)
+        jogos_como_mandante = dados[dados['mandante'] == time].copy()
+        jogos_como_visitante = dados[dados['visitante'] == time].copy()
+        
+        # Para cada jogo do time como mandante
+        for idx, jogo in jogos_como_mandante.iterrows():
+            # Pega os n_jogos anteriores a este jogo para este time
+            jogos_anteriores = dados[(dados['id'] < jogo['id']) & 
+                                    ((dados['mandante'] == time) | (dados['visitante'] == time))].tail(n_jogos)
+            
+            if len(jogos_anteriores) > 0:
+                # Calcula resultados para este time
+                vitorias = empates = derrotas = 0
+                
+                for _, j_anterior in jogos_anteriores.iterrows():
+                    if j_anterior['mandante'] == time:
+                        if j_anterior['mandante_placar'] > j_anterior['visitante_placar']:
+                            vitorias += 1
+                        elif j_anterior['mandante_placar'] == j_anterior['visitante_placar']:
+                            empates += 1
+                        else:
+                            derrotas += 1
+                    else:  # time é visitante
+                        if j_anterior['visitante_placar'] > j_anterior['mandante_placar']:
+                            vitorias += 1
+                        elif j_anterior['visitante_placar'] == j_anterior['mandante_placar']:
+                            empates += 1
+                        else:
+                            derrotas += 1
+                
+                # Atualiza os percentuais
+                total_jogos = len(jogos_anteriores)
+                dados.at[idx, 'mandante_pct_vitorias'] = vitorias / total_jogos
+                dados.at[idx, 'mandante_pct_empates'] = empates / total_jogos
+                dados.at[idx, 'mandante_pct_derrotas'] = derrotas / total_jogos
+        
+        # Para cada jogo do time como visitante
+        for idx, jogo in jogos_como_visitante.iterrows():
+            # Pega os n_jogos anteriores a este jogo para este time
+            jogos_anteriores = dados[(dados['id'] < jogo['id']) & 
+                                    ((dados['mandante'] == time) | (dados['visitante'] == time))].tail(n_jogos)
+            
+            if len(jogos_anteriores) > 0:
+                # Calcula resultados para este time
+                vitorias = empates = derrotas = 0
+                
+                for _, j_anterior in jogos_anteriores.iterrows():
+                    if j_anterior['mandante'] == time:
+                        if j_anterior['mandante_placar'] > j_anterior['visitante_placar']:
+                            vitorias += 1
+                        elif j_anterior['mandante_placar'] == j_anterior['visitante_placar']:
+                            empates += 1
+                        else:
+                            derrotas += 1
+                    else:  # time é visitante
+                        if j_anterior['visitante_placar'] > j_anterior['mandante_placar']:
+                            vitorias += 1
+                        elif j_anterior['visitante_placar'] == j_anterior['mandante_placar']:
+                            empates += 1
+                        else:
+                            derrotas += 1
+                
+                # Atualiza os percentuais
+                total_jogos = len(jogos_anteriores)
+                dados.at[idx, 'visitante_pct_vitorias'] = vitorias / total_jogos
+                dados.at[idx, 'visitante_pct_empates'] = empates / total_jogos
+                dados.at[idx, 'visitante_pct_derrotas'] = derrotas / total_jogos
+                
+    return dados
+
 # Divisão dos dados em treino e teste por ano
 df['ano'] = df['data'].dt.year
 treino = df[df['ano'] < 2023]  # Dados até 2022 para treino
@@ -41,6 +131,10 @@ teste = df[df['ano'] == 2023]  # Dados de 2023 para teste
 print(f"Tamanho do conjunto de treino: {len(treino)}")
 print(f"Tamanho do conjunto de teste: {len(teste)}")
 
+# Aplicando a função de histórico recente aos dados de treino e teste
+print("Calculando histórico recente dos times...")
+treino = calcular_historico_recente(treino)
+teste = calcular_historico_recente(teste)
 
 le_mandante = LabelEncoder()
 le_visitante = LabelEncoder()
@@ -87,7 +181,9 @@ for col in ['mandante_media_gols_pro', 'mandante_media_gols_contra', 'visitante_
 features_basicas = ['mandante_le', 'visitante_le', 'rodata']
 features_avancadas = ['mandante_le', 'visitante_le', 'rodata', 
                      'mandante_media_gols_pro', 'mandante_media_gols_contra',
-                     'visitante_media_gols_pro', 'visitante_media_gols_contra']
+                     'visitante_media_gols_pro', 'visitante_media_gols_contra',
+                     'mandante_pct_vitorias', 'mandante_pct_empates', 'mandante_pct_derrotas',
+                     'visitante_pct_vitorias', 'visitante_pct_empates', 'visitante_pct_derrotas']
 
 
 X_train_basico = treino[features_basicas]
@@ -135,7 +231,7 @@ def avaliar_modelo(modelo, X_train, y_train, X_test, y_test, nome_modelo):
     plt.xlabel('Previsto', fontsize=14)
     plt.ylabel('Real', fontsize=14)
     plt.title(f'Matriz de Confusão - {nome_modelo}', fontsize=16)
-    plt.savefig(f'/home/pedro/Machine-Learning-2025.1/Mini_trabalho_6/matriz_confusao_{nome_modelo.replace(" ", "_").lower()}.png', 
+    plt.savefig(f'matriz_confusao_{nome_modelo.replace(" ", "_").lower()}.png', 
                 dpi=300, bbox_inches='tight')
     
     return {
@@ -211,7 +307,7 @@ if hasattr(modelo_otimizado, 'coef_'):
         plt.title(f'Importância das Features para a classe: {classe}')
     
     plt.tight_layout()
-    plt.savefig('/home/pedro/Machine-Learning-2025.1/Mini_trabalho_6/importancia_features_regressao_logistica.png', 
+    plt.savefig('importancia_features_regressao_logistica.png', 
                 dpi=300, bbox_inches='tight')
 
 print("\nAnálise completa! Imagens salvas no diretório do projeto.")

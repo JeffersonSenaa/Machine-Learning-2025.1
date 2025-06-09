@@ -1,4 +1,4 @@
-# Mini Trabalho 6 — Classificação de Resultados do Campeonato Brasileiro
+# Mini Trabalho 7 — Classificação de Resultados do Campeonato Brasileiro
 
 ## MEMBROS DO GRUPO
 
