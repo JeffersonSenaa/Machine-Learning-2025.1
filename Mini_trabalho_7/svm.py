@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -51,27 +51,7 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# Modelo Original
-print("\n=== Modelo Original (SVM.py) ===")
-model_original = SVC(
-    kernel='rbf',
-    probability=True,
-    random_state=42,
-    class_weight='balanced',
-    C=1.0,
-    gamma='scale'
-)
-model_original.fit(X_train_scaled, y_train)
-y_pred_original = model_original.predict(X_test_scaled)
-
-# Métricas do modelo original
-print("\nMétricas do Modelo Original:")
-print(classification_report(y_test, y_pred_original, zero_division=0))
-
-# Modelo Otimizado
-print("\n=== Modelo Otimizado (otimizacao_svm.py) ===")
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
-
+# Otimização dos hiperparâmetros
 param_grid = {
     'C': [1, 10],
     'gamma': ['scale'],
@@ -86,75 +66,53 @@ grid_search.fit(X_train_scaled, y_train)
 print("\nMelhores hiperparâmetros encontrados:")
 print(grid_search.best_params_)
 
+# Treinamento do modelo final com os melhores hiperparâmetros
 best_model = grid_search.best_estimator_
-y_pred_optimized = best_model.predict(X_test_scaled)
+y_pred = best_model.predict(X_test_scaled)
 
-# Métricas do modelo otimizado
-print("\nMétricas do Modelo Otimizado:")
-print(classification_report(y_test, y_pred_optimized, zero_division=0))
+# Métricas do modelo
+print("\nMétricas do Modelo:")
+print(classification_report(y_test, y_pred, zero_division=0))
 
-# Comparação das métricas
-def calculate_metrics(y_true, y_pred):
-    return {
-        'accuracy': accuracy_score(y_true, y_pred),
-        'precision': precision_score(y_true, y_pred, average='macro', zero_division=0),
-        'recall': recall_score(y_true, y_pred, average='macro', zero_division=0),
-        'f1': f1_score(y_true, y_pred, average='macro', zero_division=0)
-    }
+# Cálculo das métricas com 4 casas decimais
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='macro', zero_division=0)
+recall = recall_score(y_test, y_pred, average='macro', zero_division=0)
+f1 = f1_score(y_test, y_pred, average='macro', zero_division=0)
 
-metrics_original = calculate_metrics(y_test, y_pred_original)
-metrics_optimized = calculate_metrics(y_test, y_pred_optimized)
+print("\nMétricas Detalhadas:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"F1-Score: {f1:.4f}")
 
-print("\n=== Comparação de Métricas ===")
-print("\nModelo Original vs Otimizado:")
-print(f"{'Métrica':<10} {'Original':>10} {'Otimizado':>10} {'Diferença':>10}")
-print("-" * 42)
-for metric in metrics_original.keys():
-    diff = metrics_optimized[metric] - metrics_original[metric]
-    print(f"{metric:<10} {metrics_original[metric]:>10.4f} {metrics_optimized[metric]:>10.4f} {diff:>10.4f}")
-
-# Matriz de Confusão Comparativa
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-
-# Matriz de Confusão - Modelo Original
-cm_original = confusion_matrix(y_test, y_pred_original)
-sns.heatmap(cm_original, annot=True, fmt='d', cmap='Blues', ax=ax1,
-            xticklabels=model_original.classes_,
-            yticklabels=model_original.classes_)
-ax1.set_title('Matriz de Confusão - Modelo Original')
-ax1.set_xlabel('Previsto')
-ax1.set_ylabel('Real')
-
-# Matriz de Confusão - Modelo Otimizado
-cm_optimized = confusion_matrix(y_test, y_pred_optimized)
-sns.heatmap(cm_optimized, annot=True, fmt='d', cmap='Blues', ax=ax2,
+# Matriz de Confusão
+plt.figure(figsize=(10, 8))
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
             xticklabels=best_model.classes_,
             yticklabels=best_model.classes_)
-ax2.set_title('Matriz de Confusão - Modelo Otimizado')
-ax2.set_xlabel('Previsto')
-ax2.set_ylabel('Real')
-
+plt.title('Matriz de Confusão')
+plt.xlabel('Previsto')
+plt.ylabel('Real')
 plt.tight_layout()
-plt.savefig('comparacao_matriz_confusao.png')
+plt.savefig('matriz_confusao.png')
 plt.close()
 
 # Resultados da Validação Cruzada
-print("\n=== Resultados da Validação Cruzada (Modelo Otimizado) ===")
+print("\n=== Resultados da Validação Cruzada ===")
 cv_results = pd.DataFrame(grid_search.cv_results_)
 print("\nMédia e Desvio Padrão do F1-Score nos folds:")
 print(f"Média: {cv_results['mean_test_score'].mean():.4f}")
 print(f"Desvio Padrão: {cv_results['mean_test_score'].std():.4f}")
 
 # Salvando resultados em um arquivo
-with open('resultados_comparacao.txt', 'w') as f:
-    f.write("=== Resultados da Comparação entre Modelos SVM ===\n\n")
-    f.write("Modelo Original:\n")
-    f.write(classification_report(y_test, y_pred_original, zero_division=0))
-    f.write("\nModelo Otimizado:\n")
-    f.write(classification_report(y_test, y_pred_optimized, zero_division=0))
-    f.write("\nComparação de Métricas:\n")
-    f.write(f"{'Métrica':<10} {'Original':>10} {'Otimizado':>10} {'Diferença':>10}\n")
-    f.write("-" * 42 + "\n")
-    for metric in metrics_original.keys():
-        diff = metrics_optimized[metric] - metrics_original[metric]
-        f.write(f"{metric:<10} {metrics_original[metric]:>10.4f} {metrics_optimized[metric]:>10.4f} {diff:>10.4f}\n") 
+with open('resultados_svm.txt', 'w') as f:
+    f.write("=== Resultados do Modelo SVM ===\n\n")
+    f.write("Melhores hiperparâmetros:\n")
+    f.write(str(grid_search.best_params_) + "\n\n")
+    f.write("Métricas do Modelo:\n")
+    f.write(classification_report(y_test, y_pred, zero_division=0))
+    f.write("\nResultados da Validação Cruzada:\n")
+    f.write(f"Média F1-Score: {cv_results['mean_test_score'].mean():.4f}\n")
+    f.write(f"Desvio Padrão F1-Score: {cv_results['mean_test_score'].std():.4f}\n") 
