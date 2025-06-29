@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preditor de Futebol - Brasileirão</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-futbol header-icon"></i>
+                <h1>Preditor Brasileirão</h1>
+                <p>Análise preditiva de jogos do Campeonato Brasileiro</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Match Setup Card -->
+            <div class="card match-setup">
+                <div class="card-header">
+                    <i class="fas fa-cogs"></i>
+                    <h2>Configurar Partida</h2>
+                </div>
+                <div class="card-body">
+                    <form id="prediction-form">
+                        <!-- Team Selection -->
+                        <div class="teams-container">
+                            <div class="team-selection">
+                                <label for="mandante">
+                                    <i class="fas fa-home"></i>
+                                    Time Mandante (Casa)
+                                </label>
+                                <select id="mandante" name="mandante" required>
+                                    <option value="">Selecione o time da casa</option>
+                                </select>
+                            </div>
+
+                            <div class="vs-divider">
+                                <span>VS</span>
+                            </div>
+
+                            <div class="team-selection">
+                                <label for="visitante">
+                                    <i class="fas fa-plane"></i>
+                                    Time Visitante (Fora)
+                                </label>
+                                <select id="visitante" name="visitante" required>
+                                    <option value="">Selecione o time visitante</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Round Selection -->
+                        <div class="round-selection">
+                            <label for="rodada">
+                                <i class="fas fa-calendar-alt"></i>
+                                Rodada (1-38)
+                            </label>
+                            <select id="rodada" name="rodada" required>
+                                <option value="">Selecione a rodada</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="predict-btn">
+                            <i class="fas fa-magic"></i>
+                            Fazer Predição
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card results-card" id="results-card" style="display: none;">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Resultado da Predição</h2>
+                </div>
+                <div class="card-body">
+                    <div class="match-info" id="match-info">
+                        <!-- Match info will be populated here -->
+                    </div>
+                    <div class="predictions-container" id="predictions-container">
+                        <!-- Predictions will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analisando dados...</p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Preditor Brasileirão - Powered by Machine Learning</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
